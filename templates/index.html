@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <title> Campus Wi-Fi Issue Reporter </title>
+    <style>
+        body{ font-family: system-ui; padding: 20px;}
+        input,select, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px;}
+        th, td { border:1px solid #23a511; padding: 8px; text-align: center;}
+    </style>
+</head>
+<body>
+    <h1> Campus Wi-Fi Issue Reporter </h1>
+    <form method="POST">
+        <label> Location:</label>
+        <input type="text" name="'location" required>
+
+        <label> Wi-Fi Issue: </label>
+        <select name="issue_type" required>
+            <option> No Signal </option>
+            <option> Very Slow </option>
+            <option> Negligible </option>
+            <option> Disconnected </option>
+        </select>
+
+        <label> Notes: </label>
+        <textarea name="description" placeholder="Additional info (if any)"></textarea>
+
+        <label> Name(optional): </label>
+        <input type="text" name="name">
+
+        <button type="Submit">Submit</button>
+    </form>
+</body>
+</html>
