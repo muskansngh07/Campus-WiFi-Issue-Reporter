@@ -1,35 +1,81 @@
 <!DOCTYPE html>
 <html>
-<head> 
-    <title> Campus Wi-Fi Issue Reporter </title>
-    <style>
-        body{ font-family: system-ui; padding: 20px;}
-        input,select, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px;}
-        th, td { border:1px solid #23a511; padding: 8px; text-align: center;}
-    </style>
+<head>
+  <title> Campus Wi-Fi Issue Reporter </title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body { font-family: system-ui; padding: 20px; }
+    input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; }
+    button { padding: 10px 15px; font-weight: bold; }
+    #map { height: 250px; margin-bottom: 15px; }
+    .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; }
+  </style>
 </head>
 <body>
-    <h1> Campus Wi-Fi Issue Reporter </h1>
-    <form method="POST">
-        <label> Location:</label>
-        <input type="text" name="'location" required>
+  <h2>Report a Campus Wi-Fi Issue</h2>
 
-        <label> Wi-Fi Issue: </label>
-        <select name="issue_type" required>
-            <option> No Signal </option>
-            <option> Very Slow </option>
-            <option> Negligible </option>
-            <option> Disconnected </option>
-        </select>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="success">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
-        <label> Notes: </label>
-        <textarea name="description" placeholder="Additional info (if any)"></textarea>
+  <form method="POST">
+    <label> Location: </label>
+    <input type="text" name="location" required>
 
-        <label> Name(optional): </label>
-        <input type="text" name="name">
+    <label> Issue Type: </label>
+    <select name="issue_type" required>
+      <option> No Signal </option>
+      <option> Slow Internet </option>
+      <option> Negligible </option>
+      <option> Disconnected </option>
+    </select>
 
-        <button type="Submit">Submit</button>
-    </form>
+    <label> Description (optional): </label>
+    <textarea name="description" placeholder="Add more details if needed."></textarea>
+
+    <label> Your Name (optional): </label>
+    <input type="text" name="name">
+
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
+
+    <div id="map">Loading map...</div>
+
+    <button type="submit">Submit Report</button>
+  </form>
+
+  <p><a href="/map">View Live Heatmap</a></p>
+
+  <script>
+    const fallbackLat = 17.783005;
+    const fallbackLon = 83.361459;
+
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      document.getElementById('latitude').value = lat;
+      document.getElementById('longitude').value = lon;
+
+      var map = L.map('map').setView([lat, lon], 18);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      L.marker([lat, lon]).addTo(map)
+        .bindPopup("You are here 📍").openPopup();
+    }, function() {
+      document.getElementById('latitude').value = fallbackLat;
+      document.getElementById('longitude').value = fallbackLon;
+
+      var map = L.map('map').setView([fallbackLat, fallbackLon], 17);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      L.marker([fallbackLat, fallbackLon]).addTo(map)
+        .bindPopup("Default: GITAM Campus 📍").openPopup();
+    });
+  </script>
 </body>
 </html>
